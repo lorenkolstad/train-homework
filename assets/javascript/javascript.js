@@ -21,6 +21,33 @@ var firebaseConfig = {
     console.log(childSnapshot.val().firstTrain);
     console.log(childSnapshot.val().frequency);
     console.log(childSnapshot.val().dateAdded);
+
+    var trainNameM = childSnapshot.val().trainName;
+    var destinationM = childSnapshot.val().destination;
+    var firstTrainM = childSnapshot.val().firstTrain;
+    var frequencyM = childSnapshot.val().frequency;
+
+    console.log(trainNameM);
+    console.log(destinationM);
+    console.log(firstTrainM);
+    console.log(frequencyM);
+
+    var firstTrainPretty = moment.unix(firstTrainM).format("HH:mm");
+
+    var firstTrainM = moment().diff(moment(firstTrain, "X"), "hours", "minutes");
+    console.log(firstTrainM);
+
+    var arrival = firstTrainPretty * frequency;
+    console.log(arrival);
+
+    var newRow = $("<tr>").append(
+      $("<td>").text(trainName),
+      $("<td>").text(destination),
+      $("<td>").text(firstTrainPretty),
+      $("<td>").text(arrival),
+      $("<td>").text(firstTrain),
+      $("<td>").text(frequency),
+    );
 });
 
 
@@ -45,6 +72,7 @@ $("#submitButton").on("click", function(event){
     frequency: inputFrequency,
     dateAdded: firebase.database.ServerValue.TIMESTAMP,
   });
+
 
   console.log(inputTrainName);
   

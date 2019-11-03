@@ -1,8 +1,8 @@
 .container {
     border: 1px;
     border-style: solid;
-    border-color: black;
-    background-color: grey;
+    border-color: rgba(70, 18, 32, 1);
+    background-color:rgba(202, 160, 165, 1);
     padding: 20px;
     margin: 10px;
 }
