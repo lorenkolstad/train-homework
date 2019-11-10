@@ -1,80 +1,101 @@
-console.log("test");
 
-var firebaseConfig = {
-    apiKey: "AIzaSyA4ykY84Zp4mOmwKtnJvVMlYp-P7BYNGn4",
-    authDomain: "train-homework-b0351.firebaseapp.com",
-    databaseURL: "https://train-homework-b0351.firebaseio.com",
-    projectId: "train-homework-b0351",
-    storageBucket: "train-homework-b0351.appspot.com",
-    messagingSenderId: "319473541971",
-    appId: "1:319473541971:web:9e3c33e210260a2a25f7a6"
-  };
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
+$(document).ready(function(){
 
-  var trainData = firebase.database();
+  var firebaseConfig = {
+      apiKey: "AIzaSyA4ykY84Zp4mOmwKtnJvVMlYp-P7BYNGn4",
+      authDomain: "train-homework-b0351.firebaseapp.com",
+      databaseURL: "https://train-homework-b0351.firebaseio.com",
+      projectId: "train-homework-b0351",
+      storageBucket: "train-homework-b0351.appspot.com",
+      messagingSenderId: "319473541971",
+      appId: "1:319473541971:web:9e3c33e210260a2a25f7a6"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
 
-    trainData.ref().on("child_added", function(childSnapshot, prevChildKey) {
-    console.log(childSnapshot.val())
-    console.log(childSnapshot.val().trainName);
-    console.log(childSnapshot.val().destination);
-    console.log(childSnapshot.val().firstTrain);
-    console.log(childSnapshot.val().frequency);
-    console.log(childSnapshot.val().dateAdded);
+    var trainData = firebase.database();
 
-    var trainNameM = childSnapshot.val().trainName;
-    var destinationM = childSnapshot.val().destination;
-    var firstTrainM = childSnapshot.val().firstTrain;
-    var frequencyM = childSnapshot.val().frequency;
+      trainData.ref().on("child_added", function(childSnapshot, prevChildKey) {
+      console.log(childSnapshot.val())
+      console.log(childSnapshot.val().trainName);
+      console.log(childSnapshot.val().destination);
+      console.log(childSnapshot.val().firstTrain);
+      console.log(childSnapshot.val().frequency);
+      console.log(childSnapshot.val().dateAdded);
 
-    console.log(trainNameM);
-    console.log(destinationM);
-    console.log(firstTrainM);
-    console.log(frequencyM);
+      var trainNameM = childSnapshot.val().trainName;
+      var destinationM = childSnapshot.val().destination;
+      var firstTrainM = childSnapshot.val().firstTrain;
+      var frequencyM = childSnapshot.val().frequency;
 
-    var firstTrainPretty = moment.unix(firstTrainM).format("HH:mm");
+      console.log(trainNameM);
+      console.log(destinationM);
+      console.log(firstTrainM);
+      console.log(frequencyM);
+      });
 
-    var firstTrainM = moment().diff(moment(firstTrain, "X"), "hours", "minutes");
-    console.log(firstTrainM);
+      $("#submitButton").on("click", function(event){
+        event.preventDefault();
+      
+        console.log("on-click");
+          var inputTrainName = "";
+          var inputDestination = "";
+          var inputFirstTrainTime = "";
+          var inputFrequency = "";
+      
+        inputTrainName = $("#inputTrainName").val().trim();
+        inputDestination = $("#inputDestination").val().trim();
+        inputFirstTrainTime = $("#inputFirstTrainTime").val().trim();
+        inputFrequency = $("#inputFrequency").val().trim();
 
-    var arrival = firstTrainPretty * frequency;
-    console.log(arrival);
+        var firstTrainPretty = moment.unix(inputFirstTrainTime).format("HH:mm");
+        
+        var frequencyPretty = moment.unix(inputFrequency).format("mm");
 
-    var newRow = $("<tr>").append(
-      $("<td>").text(trainName),
-      $("<td>").text(destination),
-      $("<td>").text(firstTrainPretty),
-      $("<td>").text(arrival),
-      $("<td>").text(firstTrain),
-      $("<td>").text(frequency),
-    );
-});
+        // var firstTimeConverted = moment(inputFirstTrainTime, "HH:mm").subtract(1, "years");
+        // console.log(firstTimeConverted);
 
+        var nextArrival = moment().diff(moment(firstTrainPretty + frequencyPretty), "HH:mm");
+        console.log(nextArrival);
 
-$("#submitButton").on("click", function(event){
-  event.preventDefault();
+        var minutesAway = nextArrival % frequencyPretty;
+        console.log(minutesAway);
 
-  console.log("on-click");
-    var inputTrainName = "";
-    var inputDestination = "";
-    var inputFirstTrainTime = "";
-    var inputFrequency = "";
+        // var tMinutesTillTrain = firstTrainPretty - tRemainder;
+        // console.log(tMinutesTillTrain);
 
-  inputTrainName = $("#inputTrainName").val().trim();
-  inputDestination = $("#inputDestination").val().trim();
-  inputFirstTrainTime = $("#inputFirstTrainTime").val().trim();
-  inputFrequency = $("#inputFrequency").val().trim();
+        // var nextTrain = moment().add(nextArrival, "minutes");
+        // console.log(moment(nextTrain).format("hh:mm"));
 
-  trainData.ref().push({
-    trainName: inputTrainName,
-    destination: inputDestination,
-    firstTrain: inputFirstTrainTime,
-    frequency: inputFrequency,
-    dateAdded: firebase.database.ServerValue.TIMESTAMP,
-  });
+        var firstTrainTime = moment().diff(moment(firstTrainPretty, "X"), "hours", "minutes");
+        console.log(firstTrainTime);
 
+        var frequencyMinutes =  moment().diff(moment(frequencyPretty, "X"), "minutes"); 
+        console.log(frequencyMinutes);
 
-  console.log(inputTrainName);
-  
-});
+        var arrival = firstTrainPretty + frequencyPretty;
+        console.log(arrival);
+
+        var newRow = $("<tr>");
+        $("tbody").append(newRow);
+        newRow.append("<td>" + inputTrainName),
+        newRow.append("<td>" + inputDestination),
+        newRow.append("<td>" + frequencyPretty),
+        newRow.append("<td>" + arrival),
+        newRow.append("<td>" + minutesAway),
+          // $(newRow).append("<td>" + ),
+      
+        $("#newTrains").append(newRow);
+      
+        trainData.ref().push({
+          trainName: inputTrainName,
+          destination: inputDestination,
+          firstTrain: inputFirstTrainTime,
+          frequency: inputFrequency,
+          dateAdded: firebase.database.ServerValue.TIMESTAMP,
+        });
+      });
+    });
+
+   
 
